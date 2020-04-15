@@ -1,0 +1,7 @@
+[
+{
+  "directory": "C:/Users/Tal Afek/Documents/Technion/Semester2/Matam/HW1/Dry/Nodes/build",
+  "command": "C:\\PROGRA~1\\MINGW-~1\\X86_64~1.0-P\\mingw64\\bin\\gcc.exe    -Wall -pedantic-errors -Werror -DNDEBUG -g   -std=gnu99 -o CMakeFiles\\DryNode.dir\\node.c.obj   -c \"C:\\Users\\Tal Afek\\Documents\\Technion\\Semester2\\Matam\\HW1\\Dry\\Nodes\\node.c\"",
+  "file": "C:/Users/Tal Afek/Documents/Technion/Semester2/Matam/HW1/Dry/Nodes/node.c"
+}
+]

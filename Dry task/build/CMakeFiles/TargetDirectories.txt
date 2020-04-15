@@ -1,0 +1,5 @@
+C:/Users/Tal Afek/Documents/Technion/Semester2/Matam/HW1/Dry/Nodes/build/CMakeFiles/DryNode.dir
+C:/Users/Tal Afek/Documents/Technion/Semester2/Matam/HW1/Dry/Nodes/build/CMakeFiles/package.dir
+C:/Users/Tal Afek/Documents/Technion/Semester2/Matam/HW1/Dry/Nodes/build/CMakeFiles/package_source.dir
+C:/Users/Tal Afek/Documents/Technion/Semester2/Matam/HW1/Dry/Nodes/build/CMakeFiles/edit_cache.dir
+C:/Users/Tal Afek/Documents/Technion/Semester2/Matam/HW1/Dry/Nodes/build/CMakeFiles/rebuild_cache.dir

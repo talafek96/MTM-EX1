@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/Tal Afek/Documents/Technion/Semester2/Matam/HW1/Dry/Nodes/node.c
+stdio.h
+-
+stdlib.h
+-
+assert.h
+-
+stdbool.h
+-
+
