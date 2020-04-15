@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/Tal Afek/Documents/GitHub/MTM-EX1/Dry task/BadCode/badcode.c
+stdlib.h
+-
+string.h
+-
+assert.h
+-
+stdio.h
+-
+

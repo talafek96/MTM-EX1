@@ -1,0 +1,5 @@
+C:/Users/Tal Afek/Documents/GitHub/MTM-EX1/Dry task/BadCode/build/CMakeFiles/rebuild_cache.dir
+C:/Users/Tal Afek/Documents/GitHub/MTM-EX1/Dry task/BadCode/build/CMakeFiles/BadCode.dir
+C:/Users/Tal Afek/Documents/GitHub/MTM-EX1/Dry task/BadCode/build/CMakeFiles/package.dir
+C:/Users/Tal Afek/Documents/GitHub/MTM-EX1/Dry task/BadCode/build/CMakeFiles/package_source.dir
+C:/Users/Tal Afek/Documents/GitHub/MTM-EX1/Dry task/BadCode/build/CMakeFiles/edit_cache.dir

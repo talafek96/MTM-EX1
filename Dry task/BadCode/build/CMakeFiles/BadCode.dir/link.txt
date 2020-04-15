@@ -1,0 +1,3 @@
+"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\BadCode.dir/objects.a
+C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\ar.exe cr CMakeFiles\BadCode.dir/objects.a @CMakeFiles\BadCode.dir\objects1.rsp
+C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\X8EAA8~1.EXE  -Wall -pedantic-errors -Werror -DNDEBUG -g   -Wl,--whole-archive CMakeFiles\BadCode.dir/objects.a -Wl,--no-whole-archive  -o BadCode.exe -Wl,--out-implib,libBadCode.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\BadCode.dir\linklibs.rsp

@@ -1,0 +1,7 @@
+[
+{
+  "directory": "C:/Users/Tal Afek/Documents/GitHub/MTM-EX1/Dry task/BadCode/build",
+  "command": "C:\\PROGRA~1\\MINGW-~1\\X86_64~1.0-P\\mingw64\\bin\\X8EAA8~1.EXE    -Wall -pedantic-errors -Werror -DNDEBUG -g   -std=gnu99 -o CMakeFiles\\BadCode.dir\\badcode.c.obj   -c \"C:\\Users\\Tal Afek\\Documents\\GitHub\\MTM-EX1\\Dry task\\BadCode\\badcode.c\"",
+  "file": "C:/Users/Tal Afek/Documents/GitHub/MTM-EX1/Dry task/BadCode/badcode.c"
+}
+]
