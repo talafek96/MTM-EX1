@@ -28,15 +28,19 @@ char *stringDuplicator(char *s, int times) { //Convention error - unconventional
     return out; //Coding error - returns wrong address to string, only returns the last duplication (outside the malloc allocation...)
 }
 
-/*char *stringDuplicator(char *s, int times) {
-    assert(!s);
+/*char *duplicateString(const char *str, int times) 
+{
+    assert(!str);
     assert(times > 0);
-    int LEN = strlen(s);
-    char *out = malloc(LEN * times);
-    assert(out);
-    for (int i = 0; i < times; i++) {
-        out = out + LEN;
-        strcpy(out, s);
+    int len = strlen(str);
+    char *out = malloc(len * times);
+    if (out == NULL)
+    {
+        return NULL;
+    }
+    for (int i = 0; i < times; i++)
+    {
+        strcpy(out +(i*len), str);
     }
     return out;
 }*/
