@@ -19,7 +19,7 @@ typedef enum {
 int getListLength(Node list);
 bool isListSorted(Node list);
 Node nodeCreate(int value);
-ErrorCode nodeDestroy(Node to_destroy);
+void nodeDestroy(Node to_destroy);
 ErrorCode nodeSetValue(Node list, int val);
 ErrorCode nodeAdvance(Node* list);
 ErrorCode nodeAddNode(Node* list, int value);
@@ -186,11 +186,11 @@ ErrorCode nodeAdvance(Node* list)
     return SUCCESS;
 }
 
-ErrorCode nodeDestroy(Node to_destroy)
+void nodeDestroy(Node to_destroy)
 {
     if(to_destroy == NULL)
     {
-        return SUCCESS;
+        return;
     }
     Node tmp;
     while(to_destroy != NULL)
@@ -199,7 +199,6 @@ ErrorCode nodeDestroy(Node to_destroy)
         to_destroy = to_destroy->next;
         free(tmp);
     }
-    return SUCCESS;
 }
 
 ErrorCode mergeSortedLists(Node list1, Node list2, Node *merged_out)
