@@ -66,6 +66,9 @@ int main()
     }
     printf("\nMerged list:\n");
     nodePrintValues(merged_out);
+    nodeDestroy(merged_out);
+    nodeDestroy(list1);
+    nodeDestroy(list2);
     return 0;
 }
 
@@ -219,7 +222,7 @@ ErrorCode mergeSortedLists(Node list1, Node list2, Node *merged_out)
     while(len1 > 0 && len2 > 0)
     {
         assert(list1 != NULL && list2 != NULL);
-        (*merged_out)->next = malloc(sizeof((*merged_out)));
+        (*merged_out)->next = malloc(sizeof(*(*merged_out)));
         if((*merged_out)->next == NULL)
         {
             nodeDestroy(*starter_merged);
@@ -248,7 +251,7 @@ ErrorCode mergeSortedLists(Node list1, Node list2, Node *merged_out)
             list1 = list1->next;
             if(len1 > 0) 
             {
-                (*merged_out)->next = malloc(sizeof((*merged_out)));
+                (*merged_out)->next = malloc(sizeof(*(*merged_out)));
                 if((*merged_out)->next == NULL)
                 {
                     nodeDestroy(*starter_merged);
@@ -265,7 +268,7 @@ ErrorCode mergeSortedLists(Node list1, Node list2, Node *merged_out)
         list2 = list2->next;
         if(len2 > 0)
         {
-            (*merged_out)->next = malloc(sizeof((*merged_out)));
+            (*merged_out)->next = malloc(sizeof(*(*merged_out)));
             if((*merged_out)->next == NULL)
             {
                 nodeDestroy(*starter_merged);
