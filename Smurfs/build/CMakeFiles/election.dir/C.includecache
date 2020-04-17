@@ -1,0 +1,32 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/Tal Afek/Documents/Technion/Semester2/Matam/HW1/Smurfs/election.c
+stdio.h
+-
+string.h
+-
+stdlib.h
+-
+assert.h
+-
+stdbool.h
+-
+election.h
+C:/Users/Tal Afek/Documents/Technion/Semester2/Matam/HW1/Smurfs/election.h
+
+C:/Users/Tal Afek/Documents/Technion/Semester2/Matam/HW1/Smurfs/election.h
+map.h
+C:/Users/Tal Afek/Documents/Technion/Semester2/Matam/HW1/Smurfs/map.h
+
+C:/Users/Tal Afek/Documents/Technion/Semester2/Matam/HW1/Smurfs/map.h
+stdbool.h
+-
+string.h
+-
+

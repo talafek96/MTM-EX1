@@ -1,0 +1,7 @@
+[
+{
+  "directory": "C:/Users/Tal Afek/Documents/Technion/Semester2/Matam/HW1/Smurfs/build",
+  "command": "C:\\PROGRA~1\\MINGW-~1\\X86_64~1.0-P\\mingw64\\bin\\X8EAA8~1.EXE    -Wall -pedantic-errors -DNDEBUG -g   -std=gnu99 -o CMakeFiles\\election.dir\\election.c.obj   -c \"C:\\Users\\Tal Afek\\Documents\\Technion\\Semester2\\Matam\\HW1\\Smurfs\\election.c\"",
+  "file": "C:/Users/Tal Afek/Documents/Technion/Semester2/Matam/HW1/Smurfs/election.c"
+}
+]

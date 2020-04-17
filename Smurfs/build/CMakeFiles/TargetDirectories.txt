@@ -1,0 +1,5 @@
+C:/Users/Tal Afek/Documents/Technion/Semester2/Matam/HW1/Smurfs/build/CMakeFiles/election.dir
+C:/Users/Tal Afek/Documents/Technion/Semester2/Matam/HW1/Smurfs/build/CMakeFiles/package.dir
+C:/Users/Tal Afek/Documents/Technion/Semester2/Matam/HW1/Smurfs/build/CMakeFiles/package_source.dir
+C:/Users/Tal Afek/Documents/Technion/Semester2/Matam/HW1/Smurfs/build/CMakeFiles/edit_cache.dir
+C:/Users/Tal Afek/Documents/Technion/Semester2/Matam/HW1/Smurfs/build/CMakeFiles/rebuild_cache.dir
