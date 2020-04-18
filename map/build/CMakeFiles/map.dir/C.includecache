@@ -1,0 +1,26 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/Lior/Desktop/ex1/mtm_map/map.c
+map.h
+C:/Users/Lior/Desktop/ex1/mtm_map/map.h
+stdio.h
+-
+stdlib.h
+-
+string.h
+-
+assert.h
+-
+
+C:/Users/Lior/Desktop/ex1/mtm_map/map.h
+stdbool.h
+-
+string.h
+-
+

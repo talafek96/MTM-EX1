@@ -1,0 +1,3 @@
+C:/Users/Lior/Desktop/ex1/mtm_map/build/CMakeFiles/map.dir
+C:/Users/Lior/Desktop/ex1/mtm_map/build/CMakeFiles/edit_cache.dir
+C:/Users/Lior/Desktop/ex1/mtm_map/build/CMakeFiles/rebuild_cache.dir

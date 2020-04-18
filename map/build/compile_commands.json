@@ -1,0 +1,7 @@
+[
+{
+  "directory": "C:/Users/Lior/Desktop/ex1/mtm_map/build",
+  "command": "C:\\TDM-GCC-64\\bin\\x86_64-w64-mingw32-gcc.exe    -Wall -pedantic-errors -DNDEBUG -g   -std=gnu99 -o CMakeFiles\\map.dir\\map.c.obj   -c C:\\Users\\Lior\\Desktop\\ex1\\mtm_map\\map.c",
+  "file": "C:/Users/Lior/Desktop/ex1/mtm_map/map.c"
+}
+]

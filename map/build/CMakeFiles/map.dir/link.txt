@@ -1,0 +1,2 @@
+C:\TDM-GCC-64\bin\ar.exe qc libmap.a  CMakeFiles/map.dir/map.c.obj
+C:\TDM-GCC-64\bin\ranlib.exe libmap.a
