@@ -5,7 +5,7 @@
 #include <assert.h> 
 
 /** The initial size of Key's arry in a Map */
-#define MAP_INITIAL_SIZE 10
+#define MAP_INITIAL_SIZE 100
 
 /** The pactor by which to expand the Key's arry when needed */
 #define MAP_EXPAND_FACTOR 2
@@ -79,7 +79,9 @@ static Key keyCreate(const char* key_id, const char* key_value)
     {
         return NULL;
     }
-    Key key = malloc(sizeof(Key));
+    strcpy(id, key_id);
+    strcpy(value, key_value);
+    Key key = malloc(sizeof(*key));
     if(!key)
     {
         return NULL;
@@ -162,7 +164,7 @@ static inline char *keyGetValue(Key key)
 static int mapFindKey(Map map, const char* key)
 {
     assert (map != NULL && key != NULL);
-    for (int index =0 ; index < map->size ; index++)
+    for (int index = 0; index < map->size; index++)
     {
         if (!strcmp(key,keyGetID((map->keys[index]))))
         {
@@ -204,6 +206,7 @@ Map mapCreate()
     new_map->keys = new_array;
     new_map->size = 0;
     new_map->max_size = MAP_INITIAL_SIZE;
+    new_map->iterator = 0;
     return new_map;
 }
 
@@ -291,8 +294,7 @@ MapResult mapPut(Map map, const char* key, const char* data)
             keyDestroy(new_key);
             return MAP_OUT_OF_MEMORY;
         }
-        map->size = map->size + 1;
-        map->keys[map->size] = new_key;
+        map->keys[map->size++] = new_key;
         return MAP_SUCCESS;
     }
     if (keySetValue(map->keys[key_index] , data) != KEY_SUCCESS)
@@ -347,7 +349,7 @@ char* mapGetFirst(Map map)
         return NULL;
     }
     map->iterator = 0;
-    return keyGetID((map->keys)[map->iterator]);
+    return map->size > 0? keyGetID((map->keys)[map->iterator]) : NULL;
 }
 
 char* mapGetNext(Map map)
@@ -357,7 +359,7 @@ char* mapGetNext(Map map)
         return NULL;
     }
     map->iterator++;
-    return keyGetID((map->keys)[map->iterator]);
+    return map->iterator >= map->size? NULL : keyGetID((map->keys)[map->iterator]);
 }
 
 MapResult mapClear(Map map)
