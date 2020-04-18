@@ -5,7 +5,7 @@ project(election VERSION 0.1.0)
 # enable_testing()
 
 set(CMAKE_C_STANDARD 99)
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -pedantic-errors -DNDEBUG") # -Werror
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -pedantic-errors -Werror -DNDEBUG") # -Werror
 add_library(election election.c)
 
 # set(CPACK_PROJECT_NAME ${PROJECT_NAME})
