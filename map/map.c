@@ -30,7 +30,7 @@ typedef enum
 static void keyDestroy(Key key);
 static Key keyCreate(const char* key_id, const char* key_value);
 static KeyResult keySetValue(Key key, const char *value);
-static KeyResult keyCopy(Key dest, const Key source);
+// static KeyResult keyCopy(Key dest, const Key source);
 static inline char *keyGetID(Key key);
 static inline char *keyGetValue(Key key);
 
@@ -117,28 +117,28 @@ static KeyResult keySetValue(Key key, const char *value)
 }
 
 /**
- * @param dest - A destination key to copy into.
+ * @param dest - A destination key to copy into. **MUST BE CREATED!!**
  * @param source - A constant source key to copy from.
  * @return
  * Assuming dest and source are not null vals.
  * KEY_OUT_OF_MEMORY - in case of memory allocation error.
  * KEY_SUCCESS - in the case which the copy was successful.
  * */
-static KeyResult keyCopy(Key dest, const Key source)
-{
-    assert(dest != NULL && source != NULL);
-    char *copy_id = malloc(strlen(source->id) + 1);
-    char *copy_value = malloc(strlen(source->value) + 1);
-    if(!copy_id || !copy_value)
-    {
-        free(copy_id);
-        free(copy_value);
-        return KEY_OUT_OF_MEMORY;
-    }
-    dest->id = copy_id;
-    dest->value = copy_value;
-    return KEY_SUCCESS;
-}
+// static KeyResult keyCopy(Key dest, const Key source)
+// {
+//     assert(dest != NULL && source != NULL);
+//     char *copy_id = malloc(strlen(source->id) + 1);
+//     char *copy_value = malloc(strlen(source->value) + 1);
+//     if(!copy_id || !copy_value)
+//     {
+//         free(copy_id);
+//         free(copy_value);
+//         return KEY_OUT_OF_MEMORY;
+//     }
+//     dest->id = copy_id;
+//     dest->value = copy_value;
+//     return KEY_SUCCESS;
+// }
 
 static inline char *keyGetID(Key key)
 {
@@ -237,7 +237,8 @@ Map mapCopy(Map map)
     }
     for(int i = 0; i < map->size; i++)
     {
-        if(keyCopy((new_map->keys)[i], (map->keys)[i]) == KEY_OUT_OF_MEMORY)
+        (new_map->keys)[i] = keyCreate((map->keys)[i]->id, (map->keys)[i]->value);
+        if((new_map->keys)[i] == NULL)
         {
             for(int j = 0; j < i; j++)
             {
