@@ -130,6 +130,7 @@ static bool isValidName(const char *name)
         {
             return false;
         }
+        name++;
     }
     return true;
 }
@@ -154,7 +155,7 @@ Election electionCreate()
     Map new_areas_map = mapCreate();
     Map new_tribes_map = mapCreate();
     Map new_votes_map = mapCreate();
-    Election new_election = malloc(sizeof(new_election));
+    Election new_election = malloc(sizeof(*new_election));
     if (!new_areas_map || !new_tribes_map || !new_votes_map || !new_election)
     {
         mapDestroy(new_votes_map);
@@ -212,6 +213,7 @@ ElectionResult electionAddTribe (Election election, int tribe_id, const char* tr
         free(tribe_char_id);
         return ELECTION_OUT_OF_MEMORY;
     }
+    free(tribe_char_id);
     return ELECTION_SUCCESS;
     
 }
@@ -246,6 +248,7 @@ ElectionResult electionAddArea(Election election, int area_id, const char* area_
         free(area_char_id);
         return ELECTION_OUT_OF_MEMORY;
     }
+    free(area_char_id);
     return ELECTION_SUCCESS;
 }
 
@@ -259,9 +262,15 @@ char* electionGetTribeName (Election election, int tribe_id) ////////TO CHANGE
     char* tmp = mapGet(election->tribes, tribe_char_id);
     if(!tmp)
     {
+        free(tribe_char_id);
         return NULL;
     }
     char* tribe_name = malloc(strlen(tmp) + 1);
+    if(!tribe_name)
+    {
+        free(tribe_char_id);
+        return NULL;
+    }
     strcpy(tribe_name, tmp);
     free(tribe_char_id);
     return tribe_name;
@@ -357,10 +366,14 @@ ElectionResult electionRemoveVote(Election election, int area_id, int tribe_id, 
     }
     if(!mapContains(election->areas, str_area_id))
     {
+        free(str_area_id);
+        free(str_tribe_id);
         return ELECTION_AREA_NOT_EXIST;
     }
     if(!mapContains(election->tribes, str_tribe_id))
     {
+        free(str_area_id);
+        free(str_tribe_id);
         return ELECTION_TRIBE_NOT_EXIST;
     }
     char *vote_key = malloc(strlen(str_area_id) + strlen(str_tribe_id) + 1 + 1);
@@ -420,10 +433,12 @@ ElectionResult electionSetTribeName (Election election, int tribe_id, const char
     }
     if(!mapContains(election->tribes, str_tribe_id))
     {
+        free(str_tribe_id);
         return ELECTION_TRIBE_NOT_EXIST;
     }
     if(!isValidName(tribe_name))
     {
+        free(str_tribe_id);
         return ELECTION_INVALID_NAME;
     }
     if(mapPut(election->tribes, str_tribe_id, tribe_name) == MAP_OUT_OF_MEMORY)
@@ -622,12 +637,12 @@ Map electionComputeAreasToTribesMapping (Election election)
                 {
                     if(stringToInt(tribe) < stringToInt(max_ptr))
                     {
-                        max_votes = tribe_votes;
                         max_ptr = tribe;
                     }
                 }
             }
             free(vote_key);
+            tribe_votes = 0;
         }
         if(mapPut(statistics, area, max_ptr) != MAP_SUCCESS)
         {
@@ -635,6 +650,7 @@ Map electionComputeAreasToTribesMapping (Election election)
             return NULL;
         }
         max_ptr = lowest_id;
+        max_votes = 0;
     }
     return statistics;
 }
