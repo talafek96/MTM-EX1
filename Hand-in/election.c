@@ -34,7 +34,7 @@ static void *expand(void *ptr, int current_size);
  */
 static int stringToInt(const char *str)
 {
-    assert(*str >= '0' && *str <= 9);
+    assert(*str >= '0' && *str <= '9');
     int num = 0;
     while (*str) 
     {
@@ -64,7 +64,7 @@ static char *intToString(int num)
         temp /= 10;
         len++;
     }
-    char *new_str = malloc((len+1)*sizeof(char));
+    char *new_str = malloc(len+1);
     if(new_str == NULL)
     {
         return NULL;
@@ -92,7 +92,7 @@ static char *voteKeyToAreaKey(const char *vote_key)
     bool dash = false;
     while(*(vote_key+counter) && !dash)
     {
-        if(*vote_key == '-')
+        if(*(vote_key + counter) == '-')
         {
             dash = true;
             continue;
@@ -276,7 +276,7 @@ char* electionGetTribeName (Election election, int tribe_id) ////////TO CHANGE
     return tribe_name;
 }
 
-ElectionResult electionAddVote (Election election, int area_id, int tribe_id, int num_of_votes)
+ElectionResult electionAddVote(Election election, int area_id, int tribe_id, int num_of_votes)
 {
     if (election == NULL)
     {
@@ -503,6 +503,7 @@ ElectionResult electionRemoveTribe (Election election, int tribe_id)
             }
             remove_votes[counter++]= area_vote;
         }
+        free(area_vote);
     }
     for(int i = 0; i < counter; i++)
     {
@@ -521,8 +522,8 @@ ElectionResult electionRemoveAreas(Election election, AreaConditionFunction shou
     {
         return ELECTION_NULL_ARGUMENT;
     }
-    char **votes_to_remove = malloc(ELECTION_INITIAL_SIZE * sizeof(**votes_to_remove));
-    char **areas_to_remove = malloc(ELECTION_INITIAL_SIZE * sizeof(**areas_to_remove));
+    char **votes_to_remove = malloc(ELECTION_INITIAL_SIZE * sizeof(*votes_to_remove));
+    char **areas_to_remove = malloc(ELECTION_INITIAL_SIZE * sizeof(*areas_to_remove));
     if(areas_to_remove == NULL || votes_to_remove == NULL)
     {
         free(areas_to_remove);
