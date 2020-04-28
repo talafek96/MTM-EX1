@@ -9,7 +9,24 @@
 #define ELECTION_STR_TO_INT '0'
 #define ELECTION_INITIAL_SIZE 100
 #define ELECTION_RESIZE_FACTOR 2
-#define ELECTION_MAX_NUM_LENGTH 12
+
+#define REPEATED_MAP_REMOVE(map, item_bank, num_of_items) \
+    do { \
+        for(int i = 0; i < num_of_items; i++) \
+        { \
+            mapRemove(map, item_bank[i]); \
+        } \
+    } while(0)
+
+#define FREE_ARRAY(array, counter) \
+    do \
+    { \
+        for(int i = 0; i < counter; i++) \
+        { \
+            free(array[i]); \
+        } \
+        free(array); \
+    } while(0)
 
 //----------STRUCT&FUNCTION-DECLARATIONS----------//
 struct election_t
@@ -24,7 +41,13 @@ static char *intToString(int num);
 static bool isValidName(const char *name);
 static char *voteKeyToAreaKey(const char *vote_key);
 static void *expand(void *ptr, int current_size);
-
+static const char *electionFindLowestID(Map map);
+static char *electionGenerateVoteKey(const char *area, const char *tribe);
+static const char *electionGetChosenTribeByArea(Election election, const char *area);
+static ElectionResult electionGetVoteListByArea(Election election, const char *area, char **votes_bank,
+                                                int *votes_size, int *votes_counter);
+static ElectionResult electionGetVoteListByTribe(Election election, const char *tribe, char **votes_bank,
+                                                int *votes_size, int *votes_counter);
 
 //--------------------STATIC-FUNCTIONS--------------------//
 /** 
@@ -45,7 +68,7 @@ static int stringToInt(const char *str)
     return num;
 }
 
-/**  
+/**
  * @param num - The int you want to convert to string.
  * @return 
  * new_str - A pointer to the result string.
@@ -140,13 +163,185 @@ static bool isValidName(const char *name)
  * @param current_size - The current size of the array
  * @return 
  * An address to the new pointer, if allocation was successful
- * NULL, if allocation was failed.
+ * NULL, if the allocation failed.
  * ----If allocation fails, @param ptr will still be allocated!----
  */
 static void *expand(void *ptr, int current_size)
 {
     void *new_ptr = realloc(ptr, current_size * ELECTION_RESIZE_FACTOR);
     return new_ptr;
+}
+
+/**
+ * @param map - A map with keys of strings that represent int numbers.
+ * @return 
+ * An pointer to the key with the lowest ID in the map - if allocation was successful (NOT A COPY!)
+ * NULL, if the allocation failed or if the map is empty.
+ */
+static const char *electionFindLowestID(Map map)
+{
+    const char *lowest_id = mapGetFirst(map);
+    if(lowest_id == NULL)
+    {
+        return NULL;
+    }
+    MAP_FOREACH(element, map)
+    {
+        if(stringToInt(element) <= stringToInt(lowest_id))
+        {
+            lowest_id = element;
+        }
+    }
+    return lowest_id;
+}
+
+/**
+ * @param area - The area key as a const string.
+ * @param tribe - The tribe key as a const string.
+ * @return 
+ * A new string with the format of the corresponding vote key.
+ * NULL, if the allocation failed.
+ */
+static char *electionGenerateVoteKey(const char *area, const char *tribe)
+{
+    assert(area != NULL && tribe != NULL);
+    char *vote_key = malloc(strlen(area) + strlen(tribe) + 1 + 1);
+    if(vote_key == NULL)
+    {
+        return NULL;
+    }
+    sprintf(vote_key,"%s-%s", area, tribe);
+    return vote_key;
+}
+
+/**
+ * @param election - A pointer to the election struct.
+ * @param area - An area key as a const string.
+ * @return 
+ * A pointer to the key of the chosen tribe by the @param area.
+ * NULL, if the allocation failed, or if the map is empty.
+ */
+static const char *electionGetChosenTribeByArea(Election election, const char *area)
+{
+    int tribe_votes = 0, max_votes = 0;
+    const char *max_ptr = electionFindLowestID(election->tribes);
+    if(max_ptr == NULL)
+    {
+        return NULL;
+    }
+    MAP_FOREACH(tribe, election->tribes)
+    {
+        char *vote_key = electionGenerateVoteKey(area, tribe);
+        if(vote_key == NULL)
+        {
+            return NULL;
+        }
+        if(mapContains(election->votes, vote_key))
+        {
+            tribe_votes = stringToInt(mapGet(election->votes, vote_key));
+            if(tribe_votes > max_votes)
+            {
+                max_votes = tribe_votes;
+                max_ptr = tribe;
+            }
+            else if(tribe_votes == max_votes)
+            {
+                if(stringToInt(tribe) < stringToInt(max_ptr))
+                {
+                    max_ptr = tribe;
+                }
+            }
+        }
+        free(vote_key);
+        tribe_votes = 0;
+    }
+    return max_ptr;
+}
+
+/**
+ * @param election - A pointer to the election struct.
+ * @param area - An area key as a const string.
+ * @param votes_bank - An allocated array of strings to store all the votes by the area.
+ * @param votes_size - A pointer to the initial size of the array.
+ * @param votes_counter - A pointer to a variable to store the number of votes by the area.
+ * @return 
+ * ELECTION_SUCCESS - if the function succeeds.
+ * ELECTION_OUT_OF_MEMORY - in case of allocation or re-allocation fail.
+ * --IN CASE OF ALLOCATION FAIL, @param votes_bank WILL STILL BE ALLOCATED!--
+ */
+static ElectionResult electionGetVoteListByArea(Election election, const char *area, char **votes_bank,
+                                                int *votes_size, int *votes_counter)
+{
+    MAP_FOREACH(vote, election->votes)
+    {
+        char *tmp = voteKeyToAreaKey(vote);
+        if(tmp == NULL)
+        {
+            return ELECTION_OUT_OF_MEMORY;
+        }
+        if(!strcmp(area, tmp))
+        {
+            if(*votes_counter >= *votes_size) //Checks to see if it goes out-of-bounds
+            {
+                char **tmp_ptr = votes_bank;
+                votes_bank = expand(votes_bank, *votes_size);
+                *votes_size *= ELECTION_RESIZE_FACTOR;
+                if(votes_bank == NULL)
+                {
+                    votes_bank = tmp_ptr;
+                    free(tmp);
+                    return ELECTION_OUT_OF_MEMORY;
+                }
+            }
+            votes_bank[(*votes_counter)++] = vote;
+        }
+        free(tmp);
+    }
+    return ELECTION_SUCCESS;
+}
+
+/**
+ * @param election - A pointer to the election struct.
+ * @param tribe - An tribe key as a const string.
+ * @param votes_bank - An allocated array of strings to store all the votes by the tribe.
+ * @param votes_size - A pointer to the initial size of the array.
+ * @param votes_counter - A pointer to a variable to store the number of votes by the tribe.
+ * @return 
+ * ELECTION_SUCCESS - if the function succeeds.
+ * ELECTION_OUT_OF_MEMORY - in case of allocation or re-allocation fail.
+ * --IN CASE OF ALLOCATION FAIL, @param votes_bank WILL STILL BE ALLOCATED!-- 
+ */
+static ElectionResult electionGetVoteListByTribe(Election election, const char *tribe, char **votes_bank,
+                                                int *votes_size, int *votes_counter)
+{
+    MAP_FOREACH(area, election->areas)
+    {
+        char *area_vote = electionGenerateVoteKey(area, tribe);
+        if (area_vote == NULL)
+        {
+            return ELECTION_OUT_OF_MEMORY;
+        }
+        if (mapContains(election->votes,area_vote))
+        {
+            if (votes_counter >= votes_size) //Check to see if the pointer goes out-of-bounds
+            {
+                char **temp_ptr = votes_bank;
+                votes_bank = expand(votes_bank, *votes_size);
+                *votes_size *= ELECTION_RESIZE_FACTOR;
+                if(votes_bank == NULL)
+                {
+                    free(temp_ptr);
+                    return ELECTION_OUT_OF_MEMORY;
+                }                      
+            }
+            votes_bank[(*votes_counter)++]= area_vote;
+        }
+        else
+        {
+            free(area_vote);
+        }
+    }
+    return ELECTION_SUCCESS;
 }
 
 //--------------------HEADER-FUNCTIONS--------------------//
@@ -168,7 +363,6 @@ Election electionCreate()
     new_election->tribes = new_tribes_map;
     new_election->votes = new_votes_map;
     return new_election;
-    
 }
 
 void electionDestroy(Election election)
@@ -254,6 +448,10 @@ ElectionResult electionAddArea(Election election, int area_id, const char* area_
 
 char* electionGetTribeName (Election election, int tribe_id) ////////TO CHANGE
 {
+    if(tribe_id < 0)
+    {
+        return NULL; 
+    }
     char* tribe_char_id = intToString(tribe_id);
     if (tribe_char_id == NULL)
     {
@@ -276,7 +474,7 @@ char* electionGetTribeName (Election election, int tribe_id) ////////TO CHANGE
     return tribe_name;
 }
 
-ElectionResult electionAddVote(Election election, int area_id, int tribe_id, int num_of_votes)
+ElectionResult electionAddVote(Election election, int area_id, int tribe_id, int num_of_votes)  
 {
     if (election == NULL)
     {
@@ -310,14 +508,13 @@ ElectionResult electionAddVote(Election election, int area_id, int tribe_id, int
         free(tribe_char_id);
         return ELECTION_TRIBE_NOT_EXIST;
     }
-    char* vote_key = malloc((strlen(area_char_id)+strlen(tribe_char_id)+2)*sizeof(char)); 
+    char* vote_key = electionGenerateVoteKey(area_char_id,tribe_char_id);
     if (vote_key == NULL)
     {
         free(area_char_id);
         free(tribe_char_id);
         return ELECTION_OUT_OF_MEMORY;
     }
-    sprintf(vote_key,"%s-%s",area_char_id, tribe_char_id);
     char *new_num_of_votes_str = mapContains(election->votes, tribe_char_id)?
     intToString(stringToInt(mapGet(election->votes, vote_key)) + num_of_votes) : intToString(num_of_votes);
     if (new_num_of_votes_str == NULL)
@@ -376,14 +573,13 @@ ElectionResult electionRemoveVote(Election election, int area_id, int tribe_id, 
         free(str_tribe_id);
         return ELECTION_TRIBE_NOT_EXIST;
     }
-    char *vote_key = malloc(strlen(str_area_id) + strlen(str_tribe_id) + 1 + 1);
+    char *vote_key = electionGenerateVoteKey(str_area_id,str_tribe_id);
     if(!vote_key)
     {
         free(str_area_id);
         free(str_tribe_id);
         return ELECTION_OUT_OF_MEMORY;
     }
-    sprintf(vote_key, "%s-%s", str_area_id, str_tribe_id);
     if(!mapContains(election->votes, vote_key))
     {
         free(vote_key);
@@ -450,7 +646,8 @@ ElectionResult electionSetTribeName (Election election, int tribe_id, const char
     return ELECTION_SUCCESS;
 }
 
-ElectionResult electionRemoveTribe (Election election, int tribe_id)
+
+ElectionResult electionRemoveTribe(Election election, int tribe_id)
 {
     if (election == NULL)
     {
@@ -471,46 +668,21 @@ ElectionResult electionRemoveTribe (Election election, int tribe_id)
         return ELECTION_TRIBE_NOT_EXIST;
     }
     char** remove_votes = malloc(ELECTION_INITIAL_SIZE*sizeof(remove_votes));
-    int counter=0, elements_number = ELECTION_INITIAL_SIZE;
-    MAP_FOREACH(area, election->areas)
+    if (remove_votes == NULL)
     {
-        char *area_vote = malloc(strlen(area)+strlen(tribe_char_id)+1+1);
-        if (area_vote == NULL)
-        {
-            free(tribe_char_id);
-            free(remove_votes);
-            return ELECTION_OUT_OF_MEMORY;
-        }
-        sprintf(area_vote, "%s-%s", area, tribe_char_id);
-        if (mapContains(election->votes,area_vote))
-        {
-            if (counter >= elements_number) //Check to see if the pointer goes out-of-bounds
-            {
-                char **temp_ptr = remove_votes;
-                remove_votes = expand(remove_votes, elements_number);
-                elements_number *= ELECTION_RESIZE_FACTOR;
-                if(remove_votes == NULL)
-                {
-                    free(temp_ptr);
-                    free(tribe_char_id);
-                    for(int i = 0; i < counter; i++)
-                    {
-                        free(remove_votes[i]);
-                    }
-                    free(remove_votes);
-                    return ELECTION_OUT_OF_MEMORY;
-                }                      
-            }
-            remove_votes[counter++]= area_vote;
-        }
-        free(area_vote);
+        free(tribe_char_id);
+        return ELECTION_OUT_OF_MEMORY;
     }
-    for(int i = 0; i < counter; i++)
+    int counter = 0, elements_number = ELECTION_INITIAL_SIZE;
+    if(electionGetVoteListByTribe(election,tribe_char_id,remove_votes, &elements_number, &counter) != ELECTION_SUCCESS)
     {
-        mapRemove(election->votes, remove_votes[i]);
-        free(remove_votes[i]);
+        FREE_ARRAY(remove_votes, counter);
+        mapRemove(election->tribes, tribe_char_id);
+        free(tribe_char_id);
+        return ELECTION_OUT_OF_MEMORY;
     }
-    free(remove_votes);
+    REPEATED_MAP_REMOVE(election->votes, remove_votes, counter);
+    FREE_ARRAY(remove_votes, counter);
     mapRemove(election->tribes, tribe_char_id);
     free(tribe_char_id);
     return ELECTION_SUCCESS;
@@ -536,34 +708,12 @@ ElectionResult electionRemoveAreas(Election election, AreaConditionFunction shou
     {
         if(should_delete_area(stringToInt(area)))
         {
-            MAP_FOREACH(vote, election->votes)
+            if(electionGetVoteListByArea(election, area, votes_to_remove, &votes_element_number, &votes_counter)
+            != ELECTION_SUCCESS)
             {
-                char *tmp = voteKeyToAreaKey(vote);
-                if(tmp == NULL)
-                {
-                    free(tmp);
-                    free(areas_to_remove);
-                    free(votes_to_remove);
-                    return ELECTION_OUT_OF_MEMORY;
-                }
-                if(!strcmp(area, tmp))
-                {
-                    if(votes_counter >= votes_element_number) //Checks to see if it goes out-of-bounds
-                    {
-                        char **tmp_ptr = votes_to_remove;
-                        votes_to_remove = expand(votes_to_remove, votes_element_number);
-                        votes_element_number *= ELECTION_RESIZE_FACTOR;
-                        if(votes_to_remove == NULL)
-                        {
-                            free(tmp_ptr);
-                            free(tmp);
-                            free(areas_to_remove);
-                            return ELECTION_OUT_OF_MEMORY;
-                        }
-                    }
-                    votes_to_remove[votes_counter++] = vote;
-                }
-                free(tmp);
+                free(areas_to_remove);
+                free(votes_to_remove);
+                return ELECTION_OUT_OF_MEMORY;
             }
             if(areas_counter >= areas_element_number) //Checks to see if it goes out-of-bounds
             {
@@ -580,14 +730,8 @@ ElectionResult electionRemoveAreas(Election election, AreaConditionFunction shou
             areas_to_remove[areas_counter++] = area;
         }
     }
-    for(int i = 0; i < votes_counter; i++)
-    {
-        mapRemove(election->votes, votes_to_remove[i]);
-    }
-    for(int i = 0; i < areas_counter; i++)
-    {
-        mapRemove(election->areas, areas_to_remove[i]);
-    }
+    REPEATED_MAP_REMOVE(election->votes, votes_to_remove, votes_counter);
+    REPEATED_MAP_REMOVE(election->areas, areas_to_remove, areas_counter);
     free(areas_to_remove);
     free(votes_to_remove);
     return ELECTION_SUCCESS;
@@ -600,58 +744,19 @@ Map electionComputeAreasToTribesMapping (Election election)
     {
         return NULL;
     }
-    int tribe_votes = 0;
-    int max_votes = 0;
-    char *max_ptr = NULL, *lowest_id = mapGetFirst(election->tribes);
-    if(lowest_id == NULL)
-    {
-        return statistics;
-    }
-    MAP_FOREACH(tribe, election->tribes)
-    {
-        if(stringToInt(tribe) <= stringToInt(lowest_id))
-        {
-            lowest_id = tribe;
-        }
-    }
-    max_ptr = lowest_id;
+    const char *max_ptr = NULL;
     MAP_FOREACH(area, election->areas)
     {
-        MAP_FOREACH(tribe, election->tribes)
+        max_ptr = electionGetChosenTribeByArea(election, area);
+        if(max_ptr == NULL)
         {
-            char *vote_key = malloc(strlen(area) + strlen(tribe) + 1 + 1);
-            if(vote_key == NULL)
-            {
-                mapDestroy(statistics);
-                return NULL;
-            }
-            sprintf(vote_key,"%s-%s", area, tribe);
-            if(mapContains(election->votes, vote_key))
-            {
-                tribe_votes = stringToInt(mapGet(election->votes, vote_key));
-                if(tribe_votes > max_votes)
-                {
-                    max_votes = tribe_votes;
-                    max_ptr = tribe;
-                }
-                else if(tribe_votes == max_votes)
-                {
-                    if(stringToInt(tribe) < stringToInt(max_ptr))
-                    {
-                        max_ptr = tribe;
-                    }
-                }
-            }
-            free(vote_key);
-            tribe_votes = 0;
+            return NULL;
         }
         if(mapPut(statistics, area, max_ptr) != MAP_SUCCESS)
         {
             mapDestroy(statistics);
             return NULL;
         }
-        max_ptr = lowest_id;
-        max_votes = 0;
     }
     return statistics;
 }
