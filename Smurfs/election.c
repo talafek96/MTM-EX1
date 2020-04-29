@@ -283,12 +283,10 @@ static ElectionResult electionGetVoteListByArea(Election election, const char *a
         {
             if(*votes_counter >= *votes_size) //Checks to see if it goes out-of-bounds
             {
-                char **tmp_ptr = votes_bank;
-                votes_bank = expand(votes_bank, *votes_size);
+                char **tmp_ptr = expand(votes_bank, *votes_size * sizeof(*votes_bank));
                 *votes_size *= ELECTION_RESIZE_FACTOR;
-                if(votes_bank == NULL)
+                if(tmp_ptr == NULL)
                 {
-                    votes_bank = tmp_ptr;
                     free(tmp);
                     return ELECTION_OUT_OF_MEMORY;
                 }
@@ -323,16 +321,15 @@ static ElectionResult electionGetVoteListByTribe(Election election, const char *
         }
         if (mapContains(election->votes,area_vote))
         {
-            if (votes_counter >= votes_size) //Check to see if the pointer goes out-of-bounds
+            if (*votes_counter >= *votes_size) //Check to see if the pointer goes out-of-bounds
             {
-                char **temp_ptr = votes_bank;
-                votes_bank = expand(votes_bank, *votes_size);
+                char **temp_ptr = expand(votes_bank, (*votes_size) * sizeof(char *));
                 *votes_size *= ELECTION_RESIZE_FACTOR;
-                if(votes_bank == NULL)
+                if(temp_ptr == NULL)
                 {
                     free(temp_ptr);
                     return ELECTION_OUT_OF_MEMORY;
-                }                      
+                }
             }
             votes_bank[(*votes_counter)++]= area_vote;
         }
@@ -667,7 +664,7 @@ ElectionResult electionRemoveTribe(Election election, int tribe_id)
         free(tribe_char_id);
         return ELECTION_TRIBE_NOT_EXIST;
     }
-    char** remove_votes = malloc(ELECTION_INITIAL_SIZE*sizeof(remove_votes));
+    char** remove_votes = malloc(ELECTION_INITIAL_SIZE*sizeof(*remove_votes));
     if (remove_votes == NULL)
     {
         free(tribe_char_id);
@@ -717,12 +714,12 @@ ElectionResult electionRemoveAreas(Election election, AreaConditionFunction shou
             }
             if(areas_counter >= areas_element_number) //Checks to see if it goes out-of-bounds
             {
-                char **tmp_ptr = areas_to_remove;
-                areas_to_remove = expand(areas_to_remove, areas_element_number);
+                // char **tmp_ptr = realloc(areas_to_remove, (areas_element_number * sizeof(*areas_to_remove)) * ELECTION_RESIZE_FACTOR);
+                char **tmp_ptr = expand(areas_to_remove, areas_element_number * sizeof(*areas_to_remove));
                 areas_element_number *= ELECTION_RESIZE_FACTOR;
-                if(areas_to_remove == NULL)
+                if(tmp_ptr == NULL)
                 {
-                    free(tmp_ptr);
+                    free(areas_to_remove);
                     free(votes_to_remove);
                     return ELECTION_OUT_OF_MEMORY;
                 }

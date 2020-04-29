@@ -1,4 +1,5 @@
 #include "map.h"
+#include "key.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,26 +14,8 @@
 /** Return by 'mapFindKey' function when didn't finde such key */
 #define MAP_NO_SUCH_KEY -1
 
-//--------------------KEY-STRUCT--------------------//
-typedef struct key_t
-{
-    char* id;
-    char* value;
-}*Key;
 
-typedef enum
-{
-    KEY_SUCCESS = 0, 
-    KEY_OUT_OF_MEMORY,
-    KEY_NULL_ARGUMENT
-} KeyResult;
 
-static void keyDestroy(Key key);
-static Key keyCreate(const char* key_id, const char* key_value);
-static KeyResult keySetValue(Key key, const char *value);
-// static KeyResult keyCopy(Key dest, const Key source);
-static inline char *keyGetID(Key key);
-static inline char *keyGetValue(Key key);
 
 //--------------------MAP-STRUCT--------------------//
 struct Map_t {
@@ -45,112 +28,7 @@ struct Map_t {
 static int mapFindKey(Map map, const char* key);
 static MapResult mapExpand(Map map);
 
-//--------------------KEY-FUNCTIONS--------------------//
-/**
- * @param key - A key struct to destroy and deallocate all it's components.
- * */
-static void keyDestroy(Key key)
-{
-    if (key == NULL)
-    {
-        return;
-    }
-    free(key->id);
-    free(key->value);
-    free(key);
-}
 
-/**
- * @param key_id - Constant string for the ID of the key.
- * @param key_value - constant string for the value of the key.
- * @return
- * NULL - in case of null arguments, memory allocation fail for the string copies/key struct.
- * In case of SUCCESS - a pointer for the new allocated key.
- * */
-static Key keyCreate(const char* key_id, const char* key_value)
-{
-    if(!key_id || !key_value)
-    {
-        return NULL;
-    }
-    char *id = malloc(strlen(key_id) + 1);
-    char *value = malloc(strlen(key_value) + 1);
-    if(!id || !key_value)
-    {
-        return NULL;
-    }
-    strcpy(id, key_id);
-    strcpy(value, key_value);
-    Key key = malloc(sizeof(*key));
-    if(!key)
-    {
-        return NULL;
-    }
-    key->id = id;
-    key->value = value;
-    return key;
-}
-
-/**
- * @param key - The key you want to chang it's value
- * @param value - The new value of the key
- * @return 
- * KEY_NULL_ARGUMENT - if one of the args are NULL
- * KEY_OUT_OF_MEMORY - if the memory allocation fails
- * KEY_SUCCESS - if the value successfully set
- */
-static KeyResult keySetValue(Key key, const char *value)
-{
-    if (key == NULL || value == NULL)
-    {
-        return KEY_NULL_ARGUMENT;
-    }
-    char* new_value = malloc((strlen(value) +1)*sizeof(char));
-    if (new_value == NULL)
-    {
-        return KEY_OUT_OF_MEMORY;
-    }
-    strcpy(new_value, value);
-    free(key->value);
-    key->value = new_value;
-    return KEY_SUCCESS;
-}
-
-/**
- * @param dest - A destination key to copy into. **MUST BE CREATED!!**
- * @param source - A constant source key to copy from.
- * @return
- * Assuming dest and source are not null vals.
- * KEY_OUT_OF_MEMORY - in case of memory allocation error.
- * KEY_SUCCESS - in the case which the copy was successful.
- * */
-// static KeyResult keyCopy(Key dest, const Key source)
-// {
-//     assert(dest != NULL && source != NULL);
-//     char *copy_id = malloc(strlen(source->id) + 1);
-//     char *copy_value = malloc(strlen(source->value) + 1);
-//     if(!copy_id || !copy_value)
-//     {
-//         free(copy_id);
-//         free(copy_value);
-//         return KEY_OUT_OF_MEMORY;
-//     }
-//     dest->id = copy_id;
-//     dest->value = copy_value;
-//     return KEY_SUCCESS;
-// }
-
-static inline char *keyGetID(Key key)
-{
-    assert(key != NULL);
-    return key->id;
-}
-
-static inline char *keyGetValue(Key key)
-{
-    assert(key != NULL);
-    return key->value;
-}
 
 //--------------------STATIC-FUNCTIONS--------------------//
 /**
@@ -216,34 +94,24 @@ void mapDestroy(Map map)
     {
         return;
     }
-    for(int i = 0; i < map->size; i++)
-    {
-        keyDestroy((map->keys)[i]);
-    }
+    mapClear(map);
     free(map->keys);
     free(map);
 }
 
 Map mapCopy(Map map)
 {
-    if(!map)
-    {
-        return NULL;
-    }
     Map new_map = mapCreate();
-    if(!new_map)
+    if(!new_map || !map)
     {
+        mapDestroy(new_map);
         return NULL;
     }
     for(int i = 0; i < map->size; i++)
     {
-        (new_map->keys)[i] = keyCreate((map->keys)[i]->id, (map->keys)[i]->value);
+        (new_map->keys)[i] = keyCreate(keyGetID((map->keys)[i]), keyGetValue((map->keys)[i]));
         if((new_map->keys)[i] == NULL)
         {
-            for(int j = 0; j < i; j++)
-            {
-                keyDestroy((new_map->keys)[j]);
-            }
             mapDestroy(new_map);
             return NULL;            
         }
