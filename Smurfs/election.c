@@ -44,9 +44,9 @@ static void *expand(void *ptr, int current_size);
 static const char *electionFindLowestID(Map map);
 static char *electionGenerateVoteKey(const char *area, const char *tribe);
 static const char *electionGetChosenTribeByArea(Election election, const char *area);
-static ElectionResult electionGetVoteListByArea(Election election, const char *area, char **votes_bank,
+static ElectionResult electionGetVoteListByArea(Election election, const char *area, char ***votes_bank,
                                                 int *votes_size, int *votes_counter);
-static ElectionResult electionGetVoteListByTribe(Election election, const char *tribe, char **votes_bank,
+static ElectionResult electionGetVoteListByTribe(Election election, const char *tribe, char ***votes_bank,
                                                 int *votes_size, int *votes_counter);
 
 //--------------------STATIC-FUNCTIONS--------------------//
@@ -261,7 +261,7 @@ static const char *electionGetChosenTribeByArea(Election election, const char *a
 /**
  * @param election - A pointer to the election struct.
  * @param area - An area key as a const string.
- * @param votes_bank - An allocated array of strings to store all the votes by the area.
+ * @param votes_bank - A pointer to the allocated array of strings to store all the votes by the area in.
  * @param votes_size - A pointer to the initial size of the array.
  * @param votes_counter - A pointer to a variable to store the number of votes by the area.
  * @return 
@@ -269,7 +269,7 @@ static const char *electionGetChosenTribeByArea(Election election, const char *a
  * ELECTION_OUT_OF_MEMORY - in case of allocation or re-allocation fail.
  * --IN CASE OF ALLOCATION FAIL, @param votes_bank WILL STILL BE ALLOCATED!--
  */
-static ElectionResult electionGetVoteListByArea(Election election, const char *area, char **votes_bank,
+static ElectionResult electionGetVoteListByArea(Election election, const char *area, char ***votes_bank,
                                                 int *votes_size, int *votes_counter)
 {
     MAP_FOREACH(vote, election->votes)
@@ -283,15 +283,16 @@ static ElectionResult electionGetVoteListByArea(Election election, const char *a
         {
             if(*votes_counter >= *votes_size) //Checks to see if it goes out-of-bounds
             {
-                char **tmp_ptr = expand(votes_bank, *votes_size * sizeof(*votes_bank));
+                char **tmp_ptr = expand(*votes_bank, *votes_size * sizeof(**votes_bank));
                 *votes_size *= ELECTION_RESIZE_FACTOR;
                 if(tmp_ptr == NULL)
                 {
                     free(tmp);
                     return ELECTION_OUT_OF_MEMORY;
                 }
+                *votes_bank = tmp_ptr;
             }
-            votes_bank[(*votes_counter)++] = vote;
+            (*votes_bank)[(*votes_counter)++] = vote;
         }
         free(tmp);
     }
@@ -301,7 +302,7 @@ static ElectionResult electionGetVoteListByArea(Election election, const char *a
 /**
  * @param election - A pointer to the election struct.
  * @param tribe - An tribe key as a const string.
- * @param votes_bank - An allocated array of strings to store all the votes by the tribe.
+ * @param votes_bank - A pointer to the allocated array of strings to store all the votes by the tribe in.
  * @param votes_size - A pointer to the initial size of the array.
  * @param votes_counter - A pointer to a variable to store the number of votes by the tribe.
  * @return 
@@ -309,7 +310,7 @@ static ElectionResult electionGetVoteListByArea(Election election, const char *a
  * ELECTION_OUT_OF_MEMORY - in case of allocation or re-allocation fail.
  * --IN CASE OF ALLOCATION FAIL, @param votes_bank WILL STILL BE ALLOCATED!-- 
  */
-static ElectionResult electionGetVoteListByTribe(Election election, const char *tribe, char **votes_bank,
+static ElectionResult electionGetVoteListByTribe(Election election, const char *tribe, char ***votes_bank,
                                                 int *votes_size, int *votes_counter)
 {
     MAP_FOREACH(area, election->areas)
@@ -323,15 +324,15 @@ static ElectionResult electionGetVoteListByTribe(Election election, const char *
         {
             if (*votes_counter >= *votes_size) //Check to see if the pointer goes out-of-bounds
             {
-                char **temp_ptr = expand(votes_bank, (*votes_size) * sizeof(char *));
+                char **tmp_ptr = expand(*votes_bank, (*votes_size) * sizeof(**votes_bank));
                 *votes_size *= ELECTION_RESIZE_FACTOR;
-                if(temp_ptr == NULL)
+                if(tmp_ptr == NULL)
                 {
-                    free(temp_ptr);
                     return ELECTION_OUT_OF_MEMORY;
                 }
+                *votes_bank = tmp_ptr;
             }
-            votes_bank[(*votes_counter)++]= area_vote;
+            (*votes_bank)[(*votes_counter)++]= area_vote;
         }
         else
         {
@@ -671,7 +672,7 @@ ElectionResult electionRemoveTribe(Election election, int tribe_id)
         return ELECTION_OUT_OF_MEMORY;
     }
     int counter = 0, elements_number = ELECTION_INITIAL_SIZE;
-    if(electionGetVoteListByTribe(election,tribe_char_id,remove_votes, &elements_number, &counter) != ELECTION_SUCCESS)
+    if(electionGetVoteListByTribe(election,tribe_char_id,&remove_votes, &elements_number, &counter) != ELECTION_SUCCESS)
     {
         FREE_ARRAY(remove_votes, counter);
         mapRemove(election->tribes, tribe_char_id);
@@ -705,7 +706,7 @@ ElectionResult electionRemoveAreas(Election election, AreaConditionFunction shou
     {
         if(should_delete_area(stringToInt(area)))
         {
-            if(electionGetVoteListByArea(election, area, votes_to_remove, &votes_element_number, &votes_counter)
+            if(electionGetVoteListByArea(election, area, &votes_to_remove, &votes_element_number, &votes_counter)
             != ELECTION_SUCCESS)
             {
                 free(areas_to_remove);
@@ -723,12 +724,13 @@ ElectionResult electionRemoveAreas(Election election, AreaConditionFunction shou
                     free(votes_to_remove);
                     return ELECTION_OUT_OF_MEMORY;
                 }
+                areas_to_remove = tmp_ptr;
             }
             areas_to_remove[areas_counter++] = area;
         }
     }
-    REPEATED_MAP_REMOVE(election->votes, votes_to_remove, votes_counter);
     REPEATED_MAP_REMOVE(election->areas, areas_to_remove, areas_counter);
+    REPEATED_MAP_REMOVE(election->votes, votes_to_remove, votes_counter);
     free(areas_to_remove);
     free(votes_to_remove);
     return ELECTION_SUCCESS;
