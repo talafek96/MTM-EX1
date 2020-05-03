@@ -56,13 +56,13 @@ static int mapFindKey(Map map, const char* key)
 static MapResult mapExpand(Map map)
 {
     assert(map != NULL);
-    int new_size = MAP_EXPAND_FACTOR* map->max_size ;
-    Key* new_kays_arry = realloc(map->keys, new_size* sizeof(*new_kays_arry));
-    if (new_kays_arry == NULL)
+    int new_size = MAP_EXPAND_FACTOR * map->max_size ;
+    Key* new_keys_array = realloc(map->keys, new_size* sizeof(*new_keys_array));
+    if (new_keys_array == NULL)
     {
         return MAP_OUT_OF_MEMORY;
     } 
-    map->keys = new_kays_arry;
+    map->keys = new_keys_array;
     map->max_size = new_size;
     return MAP_SUCCESS;
 }
