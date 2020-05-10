@@ -5,10 +5,10 @@
 #include <string.h>
 #include <assert.h> 
 
-/** The initial size of Key's arry in a Map */
+/** The initial size of Key's array in a Map */
 #define MAP_INITIAL_SIZE 100
 
-/** The pactor by which to expand the Key's arry when needed */
+/** The pactor by which to expand the Key's array when needed */
 #define MAP_EXPAND_FACTOR 2
 
 /** Return by 'mapFindKey' function when didn't finde such key */
