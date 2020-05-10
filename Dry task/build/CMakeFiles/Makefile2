@@ -60,10 +60,10 @@ RM = "C:\Program Files\CMake\bin\cmake.exe" -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = "C:\Users\Tal Afek\Documents\Technion\Semester2\Matam\HW1\Dry\Nodes"
+CMAKE_SOURCE_DIR = "C:\Users\Tal Afek\Documents\GitHub\MTM-EX1\Dry task"
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = "C:\Users\Tal Afek\Documents\Technion\Semester2\Matam\HW1\Dry\Nodes\build"
+CMAKE_BINARY_DIR = "C:\Users\Tal Afek\Documents\GitHub\MTM-EX1\Dry task\build"
 
 #=============================================================================
 # Directory level rules for the build root directory
@@ -90,14 +90,14 @@ clean: CMakeFiles/DryNode.dir/clean
 CMakeFiles/DryNode.dir/all:
 	$(MAKE) -f CMakeFiles\DryNode.dir\build.make CMakeFiles/DryNode.dir/depend
 	$(MAKE) -f CMakeFiles\DryNode.dir\build.make CMakeFiles/DryNode.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir="C:\Users\Tal Afek\Documents\Technion\Semester2\Matam\HW1\Dry\Nodes\build\CMakeFiles" --progress-num=1,2 "Built target DryNode"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir="C:\Users\Tal Afek\Documents\GitHub\MTM-EX1\Dry task\build\CMakeFiles" --progress-num=1,2 "Built target DryNode"
 .PHONY : CMakeFiles/DryNode.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/DryNode.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\Tal Afek\Documents\Technion\Semester2\Matam\HW1\Dry\Nodes\build\CMakeFiles" 2
+	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\Tal Afek\Documents\GitHub\MTM-EX1\Dry task\build\CMakeFiles" 2
 	$(MAKE) -f CMakeFiles\Makefile2 CMakeFiles/DryNode.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\Tal Afek\Documents\Technion\Semester2\Matam\HW1\Dry\Nodes\build\CMakeFiles" 0
+	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\Tal Afek\Documents\GitHub\MTM-EX1\Dry task\build\CMakeFiles" 0
 .PHONY : CMakeFiles/DryNode.dir/rule
 
 # Convenience name for target.

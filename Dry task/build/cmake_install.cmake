@@ -1,8 +1,8 @@
-# Install script for directory: C:/Users/Tal Afek/Documents/Technion/Semester2/Matam/HW1/Dry/Nodes
+# Install script for directory: C:/Users/Tal Afek/Documents/GitHub/MTM-EX1/Dry task
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "C:/Program Files (x86)/DryNode")
+  set(CMAKE_INSTALL_PREFIX "C:/Program Files (x86)/TestCode")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -40,5 +40,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "C:/Users/Tal Afek/Documents/Technion/Semester2/Matam/HW1/Dry/Nodes/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "C:/Users/Tal Afek/Documents/GitHub/MTM-EX1/Dry task/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

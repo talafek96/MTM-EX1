@@ -22,7 +22,7 @@ Node nodeCreate(int value);
 void nodeDestroy(Node to_destroy);
 ErrorCode nodeSetValue(Node list, int val);
 ErrorCode nodeAdvance(Node* list);
-ErrorCode nodeAddNode(Node* list, int value);
+ErrorCode nodeAddNode(Node list, int value);
 ErrorCode mergeSortedLists(Node list1, Node list2, Node *merged_out);
 ErrorCode nodePrintValues(Node list);
 ErrorCode nodeMassAddNode(Node* list, int starter, unsigned int repeat);
@@ -40,7 +40,7 @@ int main()
     printf("Enter values for List 1 (write Q to go next):\n");
     while(scanf(" %d%c", &x, &tmp) && (tmp != 'q' && tmp != 'Q'))
     {
-        nodeAddNode(&list1, x);
+        nodeAddNode(list1, x);
         nodeAdvance(&list1);
     }
     list1 = first1;
@@ -49,7 +49,7 @@ int main()
     printf("Enter values for List 2 (write Q to go next):\n");
     while(scanf(" %d%c", &x, &tmp) && (tmp != 'q' && tmp != 'Q'))
     {
-        nodeAddNode(&list2, x);
+        nodeAddNode(list2, x);
         nodeAdvance(&list2);
     }
     list1 = first1;
@@ -81,7 +81,7 @@ ErrorCode nodeMassAddNode(Node* list, int starter, unsigned int repeat)
     ErrorCode error = SUCCESS;
     for(int i = 0; i < repeat; i++)
     {
-        error = nodeAddNode(list, starter+i);
+        error = nodeAddNode(*list, starter+i);
         if(error != SUCCESS) return error;
     }
     return SUCCESS;
@@ -152,26 +152,6 @@ ErrorCode nodeSetValue(Node list, int val)
     return SUCCESS;
 }
 
-ErrorCode nodeAddNode(Node* list, int value)
-{
-    if(*list == NULL)
-    {
-        return NULL_ARGUMENT;
-    }
-    while((*list)->next != NULL)
-    {
-        list = &((*list)->next);
-    }
-    (*list)->next = malloc(sizeof(list));
-    if((*list)->next == NULL)
-    {
-        return MEMORY_ERROR;
-    }
-    ((*list)->next)->next = NULL;
-    ((*list)->next)->x = value;
-    return SUCCESS;
-}
-
 ErrorCode nodeAdvance(Node* list)
 {
     if(*list == NULL)
@@ -201,6 +181,43 @@ void nodeDestroy(Node to_destroy)
     }
 }
 
+ErrorCode nodeAddNode(Node list, int value)
+{
+    if(list == NULL)
+    {
+        return NULL_ARGUMENT;
+    }
+    while(list->next != NULL)
+    {
+        list = list->next;
+    }
+    list->next = malloc(sizeof(list));
+    if(list->next == NULL)
+    {
+        return MEMORY_ERROR;
+    }
+    (list->next)->next = NULL;
+    (list->next)->x = value;
+    return SUCCESS;
+}
+
+ErrorCode nodeChain(Node dest, Node source)
+{ 
+    if(!dest || !source)
+    {
+        return NULL_ARGUMENT;
+    }
+    while(source != NULL)
+    {
+        if(nodeAddNode(dest, source->x) != SUCCESS)
+        {
+            return MEMORY_ERROR;
+        }
+        source = source->next;
+    }
+    return SUCCESS;
+}
+
 ErrorCode mergeSortedLists(Node list1, Node list2, Node *merged_out)
 {
     if(list1 == NULL || list2 == NULL) 
@@ -215,67 +232,61 @@ ErrorCode mergeSortedLists(Node list1, Node list2, Node *merged_out)
     {
         return NULL_ARGUMENT;
     }
-    Node* starter_merged = merged_out;
+    Node merged_head = *merged_out;
     int len1 = getListLength(list1);
     int len2 = getListLength(list2);
+    bool is_first = true;
     while(len1 > 0 && len2 > 0)
     {
         assert(list1 != NULL && list2 != NULL);
-        (*merged_out)->next = malloc(sizeof(*(*merged_out)));
-        if((*merged_out)->next == NULL)
-        {
-            nodeDestroy(*starter_merged);
-            return MEMORY_ERROR;
-        }
         if(list1->x >= list2->x)
         {
-            (*merged_out)->x = list2->x;
+            if(is_first)
+            {
+                merged_head->x = list2->x;
+                is_first = false;
+            }
+            else if(nodeAddNode(merged_head, list2->x) != SUCCESS)
+            {
+                nodeDestroy(merged_head);
+                return MEMORY_ERROR;
+            }
             len2--;
             list2 = list2->next;
-            merged_out = &((*merged_out)->next);
         }
         else if(list1->x < list2->x)
         {
-            (*merged_out)->x = list1->x;
-            len1--;
-            list1 = list1->next;
-            merged_out = &((*merged_out)->next);
-        }
-    }
-    while(len1 > 0)
-    {
-            assert(list1 != NULL);
-            (*merged_out)->x = list1->x;
-            len1--;
-            list1 = list1->next;
-            if(len1 > 0) 
+            if(is_first)
             {
-                (*merged_out)->next = malloc(sizeof(*(*merged_out)));
-                if((*merged_out)->next == NULL)
-                {
-                    nodeDestroy(*starter_merged);
-                    return MEMORY_ERROR;
-                }
-                merged_out = &((*merged_out)->next);
+                merged_head->x = list1->x;
+                is_first = false;
             }
-    }
-    while(len2 > 0)
-    {
-        assert(list2 != NULL);
-        (*merged_out)->x = list2->x;
-        len2--;
-        list2 = list2->next;
-        if(len2 > 0)
-        {
-            (*merged_out)->next = malloc(sizeof(*(*merged_out)));
-            if((*merged_out)->next == NULL)
+            else if(nodeAddNode(merged_head, list1->x) != SUCCESS)
             {
-                nodeDestroy(*starter_merged);
+                nodeDestroy(merged_head);
                 return MEMORY_ERROR;
             }
-            merged_out = &((*merged_out)->next);
+            len1--;
+            list1 = list1->next;
         }
     }
-    (*merged_out)->next = NULL;
+    if(len1 > 0)
+    {
+        assert(list1 != NULL);
+        if(nodeChain(merged_head, list1) != SUCCESS)
+        {
+            nodeDestroy(merged_head);
+            return MEMORY_ERROR;
+        }
+    }
+    if(len2 > 0)
+    {
+        assert(list2 != NULL);
+        if(nodeChain(merged_head, list2) != SUCCESS)
+        {
+            nodeDestroy(merged_head);
+            return MEMORY_ERROR;
+        }
+    }
     return SUCCESS;
 }

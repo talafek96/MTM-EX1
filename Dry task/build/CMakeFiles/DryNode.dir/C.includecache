@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-C:/Users/Tal Afek/Documents/Technion/Semester2/Matam/HW1/Dry/Nodes/node.c
+C:/Users/Tal Afek/Documents/GitHub/MTM-EX1/Dry task/node.c
 stdio.h
 -
 stdlib.h

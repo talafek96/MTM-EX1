@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
-  "C:/Users/Tal Afek/Documents/Technion/Semester2/Matam/HW1/Dry/Nodes/node.c" "C:/Users/Tal Afek/Documents/Technion/Semester2/Matam/HW1/Dry/Nodes/build/CMakeFiles/DryNode.dir/node.c.obj"
+  "C:/Users/Tal Afek/Documents/GitHub/MTM-EX1/Dry task/node.c" "C:/Users/Tal Afek/Documents/GitHub/MTM-EX1/Dry task/build/CMakeFiles/DryNode.dir/node.c.obj"
   )
 set(CMAKE_C_COMPILER_ID "GNU")
 

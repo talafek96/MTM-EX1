@@ -64,35 +64,13 @@ RM = "C:\Program Files\CMake\bin\cmake.exe" -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = "C:\Users\Tal Afek\Documents\Technion\Semester2\Matam\HW1\Dry\Nodes"
+CMAKE_SOURCE_DIR = "C:\Users\Tal Afek\Documents\GitHub\MTM-EX1\Dry task"
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = "C:\Users\Tal Afek\Documents\Technion\Semester2\Matam\HW1\Dry\Nodes\build"
+CMAKE_BINARY_DIR = "C:\Users\Tal Afek\Documents\GitHub\MTM-EX1\Dry task\build"
 
 #=============================================================================
 # Targets provided globally by CMake.
-
-# Special rule for the target package
-package: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Run CPack packaging tool..."
-	"C:\Program Files\CMake\bin\cpack.exe" --config ./CPackConfig.cmake
-.PHONY : package
-
-# Special rule for the target package
-package/fast: package
-
-.PHONY : package/fast
-
-# Special rule for the target package_source
-package_source:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Run CPack packaging tool for source..."
-	"C:\Program Files\CMake\bin\cpack.exe" --config ./CPackSourceConfig.cmake "C:/Users/Tal Afek/Documents/Technion/Semester2/Matam/HW1/Dry/Nodes/build/CPackSourceConfig.cmake"
-.PHONY : package_source
-
-# Special rule for the target package_source
-package_source/fast: package_source
-
-.PHONY : package_source/fast
 
 # Special rule for the target edit_cache
 edit_cache:
@@ -118,9 +96,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\Tal Afek\Documents\Technion\Semester2\Matam\HW1\Dry\Nodes\build\CMakeFiles" "C:\Users\Tal Afek\Documents\Technion\Semester2\Matam\HW1\Dry\Nodes\build\CMakeFiles\progress.marks"
+	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\Tal Afek\Documents\GitHub\MTM-EX1\Dry task\build\CMakeFiles" "C:\Users\Tal Afek\Documents\GitHub\MTM-EX1\Dry task\build\CMakeFiles\progress.marks"
 	$(MAKE) -f CMakeFiles\Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\Tal Afek\Documents\Technion\Semester2\Matam\HW1\Dry\Nodes\build\CMakeFiles" 0
+	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\Tal Afek\Documents\GitHub\MTM-EX1\Dry task\build\CMakeFiles" 0
 .PHONY : all
 
 # The main clean target
@@ -195,8 +173,6 @@ help:
 	@echo ... clean
 	@echo ... depend
 	@echo ... edit_cache
-	@echo ... package
-	@echo ... package_source
 	@echo ... rebuild_cache
 	@echo ... DryNode
 	@echo ... node.obj

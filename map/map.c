@@ -36,7 +36,7 @@ static MapResult mapExpand(Map map);
  * @param key - The wanted key
  * @return 
  * -1 if key not found 
- * otherwise the key index 
+ * Otherwise the key index 
  */
 
 static int mapFindKey(Map map, const char* key)
